@@ -1,11 +1,17 @@
 const patternContainer = document.getElementById("pattern-container");
 const patternDisplay = document.getElementById("pattern-display");
 const resetButton = document.getElementById("reset-button");
+const canvas = document.getElementById("pattern-lines");
+const ctx = canvas.getContext("2d");
+
+canvas.width = patternContainer.offsetWidth;
+canvas.height = patternContainer.offsetHeight;
 
 let pattern = [];
 let isDragging = false;
 let isError = false;
-let lastCircleId = null;  // To track the last selected circle
+let lastCircleId = null;
+let lineColor = "#10b010"; // Default line color is green
 
 // Define adjacency rules for circles in a 3x3 grid
 const adjacentMap = {
@@ -20,11 +26,38 @@ const adjacentMap = {
   9: [5, 6, 8]
 };
 
-// Function to add circle to pattern
+// Get the center of a circle
+function getCircleCenter(circle) {
+  const rect = circle.getBoundingClientRect();
+  const containerRect = patternContainer.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2 - containerRect.left,
+    y: rect.top + rect.height / 2 - containerRect.top
+  };
+}
+
+// Draw a line between two circles
+function drawLine(startCircle, endCircle) {
+  const startPos = getCircleCenter(startCircle);
+  const endPos = getCircleCenter(endCircle);
+  
+  ctx.beginPath();
+  ctx.moveTo(startPos.x, startPos.y);
+  ctx.lineTo(endPos.x, endPos.y);
+  ctx.strokeStyle = lineColor; // Set the line color dynamically
+  ctx.lineWidth = 4;
+  ctx.stroke();
+}
+
+// Clear the canvas
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Add a circle to the pattern
 function addToPattern(circle) {
   const id = parseInt(circle.id);
 
-  // If no circles have been selected yet, start with this one
   if (!lastCircleId) {
     lastCircleId = id;
     pattern.push(id);
@@ -33,31 +66,46 @@ function addToPattern(circle) {
     return;
   }
 
-  // Check if the circle is adjacent to the last one in the pattern
-  if (adjacentMap[lastCircleId].includes(id)) {
+  // If the circle is adjacent and not already part of the pattern
+  if (adjacentMap[lastCircleId].includes(id) && !pattern.includes(id)) {
+    const lastCircle = document.getElementById(lastCircleId);
     pattern.push(id);
+    drawLine(lastCircle, circle); // Draw the connecting line
     circle.classList.add("active");
     patternDisplay.textContent = pattern.join(" -> ");
-    lastCircleId = id;  // Update the last selected circle
+    lastCircleId = id;
   } else {
-    // If not adjacent, trigger an error
-    triggerError();
+    triggerError(); // Trigger error if the circle is not adjacent
   }
 }
 
-// Trigger error (set all active circles to red and reset after a short delay)
+// Trigger error (show error and change the line color to red)
 function triggerError() {
   isError = true;
+  lineColor = "#ff0000"; // Change line color to red
+  redrawLines(); // Redraw all lines in red
+  
   const circles = document.querySelectorAll(".circle.active");
   circles.forEach(circle => {
-    circle.classList.add("error");  // Add the error class (red color)
+    circle.classList.add("error");
   });
 
-  // Automatically reset the pattern after 1 second
-  setTimeout(resetPattern, 1000);
+  setTimeout(resetPattern, 1000); // Reset after 1 second
 }
 
-// Start dragging when the mouse is pressed down
+// Redraw the lines in red when there's an error
+function redrawLines() {
+  clearCanvas();
+  lineColor = "#ff0000"; // Red for error
+  
+  for (let i = 0; i < pattern.length - 1; i++) {
+    const startCircle = document.getElementById(pattern[i]);
+    const endCircle = document.getElementById(pattern[i + 1]);
+    drawLine(startCircle, endCircle);
+  }
+}
+
+// Handle mouse events
 patternContainer.addEventListener("mousedown", (e) => {
   if (e.target.classList.contains("circle") && !isError) {
     isDragging = true;
@@ -65,28 +113,28 @@ patternContainer.addEventListener("mousedown", (e) => {
   }
 });
 
-// Continue dragging over the circles
 patternContainer.addEventListener("mousemove", (e) => {
   if (isDragging && e.target.classList.contains("circle") && !isError) {
     addToPattern(e.target);
   }
 });
 
-// Stop dragging when the mouse is released
 document.addEventListener("mouseup", () => {
   isDragging = false;
 });
 
-// Reset the pattern when the reset button is clicked
-resetButton.addEventListener("click", resetPattern);
-
+// Reset the pattern
 function resetPattern() {
-  isError = false;  // Reset error state
+  isError = false;
   pattern = [];
-  lastCircleId = null;  // Reset the last circle
+  lastCircleId = null;
+  lineColor = "#10b010"; // Reset line color to green
+  clearCanvas();
   patternDisplay.textContent = '';
-  const circles = document.querySelectorAll(".circle");
-  circles.forEach(circle => {
-    circle.classList.remove("active", "error");  // Remove both active and error classes
+  document.querySelectorAll(".circle").forEach(circle => {
+    circle.classList.remove("active", "error");
   });
 }
+
+// Reset button handler
+resetButton.addEventListener("click", resetPattern);

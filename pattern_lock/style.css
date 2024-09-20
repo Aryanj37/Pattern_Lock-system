@@ -1,0 +1,132 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "General Sans";
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #d3c5d8;
+  }
+  .logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px; 
+    font-weight: bold;
+    color: #b43ee2; 
+    z-index: 10; 
+  }
+
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  
+  #pattern-container {
+    border-radius: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 30px;
+    margin-bottom: 20px;
+    /* background-color: #c1c1c1; */
+    box-shadow: 20px 20px 60px
+    #EDBFFF,inset -20px -20px 60px
+    #a438cf;
+  }
+  
+  .circle:hover{
+    background-color: #2aa22e;
+  }
+  .circle {
+    width: 100px;
+    height: 100px;
+    background-color: #e7caf3;
+    border: 2px solid #9f68b7;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s;
+  }
+  
+  .circle.active {
+    background-color: rgb(16, 176, 16);
+    color: #fff;
+  }
+  
+  .circle.error {
+    background-color: red;
+  }
+  
+  #pattern-result {
+    font-size: 18px;
+    font-weight: 550;
+    background-color: #d196e8;
+    border-radius: 50%;
+  }
+  
+  #pattern-display {
+    font-weight: bold;
+  }
+  
+
+  
+  .elem{
+    /* background-color: salmon; */
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .text-div{
+    height: 10vh;
+    position: relative;
+    z-index: 9;
+    overflow: hidden;
+}
+.elem h2{
+    font-size: 3.5vw;
+    font-weight: 600;
+    transition: all ease-out 0.5s;
+}
+
+.elem:hover h2{
+    transform: translateY(-100%);
+    color: #cb5bf8;
+}
+
+
+
+
+ button:hover {
+  background:#994cb7;
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #c36be6, 0 0 25px #9242b2, 0 0 50px #9755b0, 0 0 100px #EDBFFF;
+}
+
+#reset-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #EDBFFF;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+#reset-button:hover {
+  background-color: #a848d5;
+  color: #fff;
+}
+
+
